@@ -33,9 +33,12 @@ Desde la raíz del proyecto:
 
 ```
 npm install
+npm run dev
 ```
 
-Crear los archivos de entorno a partir de los ejemplos.
+El segundo comando inicia backend y frontend a la vez. El backend queda en `http://localhost:3001` y el frontend en `http://localhost:5173`.
+
+No hace falta crear archivos `.env`: todas las variables tienen un valor por defecto. Para personalizarlas, copiar los ejemplos.
 
 Windows:
 
@@ -51,15 +54,7 @@ cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 ```
 
-Iniciar frontend y backend a la vez:
-
-```
-npm run dev
-```
-
-El backend queda en `http://localhost:3001` y el frontend en `http://localhost:5173`.
-
-Para iniciar cada uno por separado:
+Para iniciar cada parte por separado:
 
 ```
 npm run dev:backend
@@ -82,6 +77,8 @@ Todos se ejecutan desde la raíz.
 | `npm run build` | Compila ambos proyectos |
 
 ## Variables de entorno
+
+Opcionales. Si no existe el archivo `.env`, se usan los valores por defecto.
 
 Backend (`backend/.env`):
 
