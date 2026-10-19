@@ -2,10 +2,6 @@
 
 Aplicación web full-stack con React, Express y TypeScript: autenticación local, dashboard con gráficas y pasarela de pagos simulada.
 
-## Estado
-
-En desarrollo. Esta versión contiene únicamente la base del proyecto: configuración de frontend y backend, y pruebas de humo en ambos.
-
 ## Stack
 
 - Frontend: React, TypeScript, Vite, Recharts, React Router.
@@ -66,6 +62,10 @@ npm run dev:backend
 npm run dev:frontend
 ```
 
+## SnailPay
+
+La API de pagos es una pasarela simulada; consulta el [contrato de SnailPay](docs/snailpay.md) para ver sus solicitudes, respuestas y escenarios de prueba.
+
 ## Scripts
 
 Todos se ejecutan desde la raíz.
@@ -89,7 +89,8 @@ Backend (`backend/.env`):
 |---|---|---|
 | `PORT` | Puerto del servidor | `3001` |
 | `CORS_ORIGIN` | Origen permitido para el frontend | `http://localhost:5173` |
-| `SNAILPAY_FORCE_DOWN` | Reservada para simular la caída del servicio de pagos | `false` |
+| `SNAILPAY_FORCE_DOWN` | Si es `true`, simula la caída del servicio de pagos y todas las solicitudes responden 503 | `false` |
+| `SNAILPAY_TIMEOUT_DELAY_MS` | Retraso de la respuesta para la tarjeta de prueba de timeout, en milisegundos | `6000` |
 
 Frontend (`frontend/.env`):
 
