@@ -26,8 +26,38 @@ export type LoginInput = {
 
 export type RegisterResult =
     | { ok: true; user: AuthUser }
-    | { ok: false; reason: 'invalid_input' | 'account_exists' | 'storage_failed' };
+    | { ok: false; reason: RegisterFailureReason };
 
 export type LoginResult =
     | { ok: true; user: AuthUser }
-    | { ok: false; reason: 'invalid_credentials' | 'storage_failed' };
+    | { ok: false; reason: LoginFailureReason };
+
+export type RegisterFailureReason = 'invalid_input' | 'account_exists' | 'storage_failed';
+
+export type LoginFailureReason = 'invalid_credentials' | 'storage_failed';
+
+export type RegisterFormValues = {
+    fullName: string;
+    email: string;
+    password: string;
+    confirmation: string;
+};
+export type LoginFormValues = {
+    email: string;
+    password: string;
+};
+
+
+export type RegisterFormErrors = {
+    fullName?: string;
+    email?: string;
+    password?: string;
+    confirmation?: string;
+};
+
+
+export type LoginFormErrors = {
+    email?: string;
+    password?: string;
+};
+
