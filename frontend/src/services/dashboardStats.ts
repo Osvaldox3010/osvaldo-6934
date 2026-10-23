@@ -1,11 +1,3 @@
-
-// export function countStageWins(marathon: Marathon): RunnerWins[] {
-//     return marathon.runners.map((runner) => ({
-//         name: runner.name,
-//         wins: marathon.stages.filter((stage) => stage.winnerId === runner.id).length,
-//     }));
-// }
-
 import { SimulatedDay, SnailWins, Bet, Race, BetsSummary } from "../types/dashboard";
 
 export function getVictoriesBySnail(day: SimulatedDay): SnailWins[] {

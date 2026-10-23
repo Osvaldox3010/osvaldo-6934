@@ -4,6 +4,7 @@ import { TextField } from './TextField';
 import { useAuth } from '../hooks/useAuth';
 import { validateLoginForm } from '../validators/register.validator';
 import type { LoginFormErrors, LoginFormValues } from '../types/auth';
+import '../styles/LoginPage.css';
 
 const initialValues: LoginFormValues = {
     email: '',
@@ -72,32 +73,46 @@ export function LoginPage() {
     }
 
     return (
-        <main>
-            <h1>Inicia sesión</h1>
-            <form onSubmit={handleSubmit} noValidate>
-                <TextField
-                    id="email"
-                    label="Correo electrónico"
-                    type="email"
-                    value={values.email}
-                    error={errors.email}
-                    onChange={(value) => updateValue('email', value)}
-                />
-                <TextField
-                    id="password"
-                    label="Contraseña"
-                    type="password"
-                    value={values.password}
-                    error={errors.password}
-                    onChange={(value) => updateValue('password', value)}
-                />
-                {formError && <p role="alert">{formError}</p>}
-                {isLoggedIn && <p role="status">Has iniciado sesión correctamente.</p>}
-                <button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? 'Entrando…' : 'Entrar'}
-                </button>
-                <Link to="/register">¿No tienes cuenta? Regístrate</Link>
-            </form>
+        <main className="auth-page auth-page--login">
+            <section className="auth-card" aria-labelledby="login-title">
+                <div className="auth-content">
+                    <header className="auth-header">
+                        <h1 id="login-title">Inicia sesión</h1>
+                        <p>¿No tienes cuenta? <Link to="/register">Regístrate aquí</Link></p>
+                    </header>
+                    <form className="auth-form" onSubmit={handleSubmit} noValidate>
+                        <TextField
+                            id="email"
+                            label="Correo electrónico"
+                            placeholder="Correo electrónico"
+                            type="email"
+                            autoComplete="email"
+                            value={values.email}
+                            error={errors.email}
+                            onChange={(value) => updateValue('email', value)}
+                        />
+                        <TextField
+                            id="password"
+                            label="Contraseña"
+                            placeholder="Contraseña"
+                            type="password"
+                            showPasswordToggle
+                            autoComplete="current-password"
+                            value={values.password}
+                            error={errors.password}
+                            onChange={(value) => updateValue('password', value)}
+                        /> 
+                        {formError && <p role="alert">{formError}</p>}
+                        {isLoggedIn && <p role="status">Has iniciado sesión correctamente.</p>}
+                        <button className="auth-submit" type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? 'Entrando…' : 'Entrar'}
+                        </button>
+                    </form>
+                </div>
+                <figure className="auth-illustration">
+                    <img src="/images/snail.png" alt="Ilustración de un caracol morado" />
+                </figure>
+            </section>
         </main>
     );
 }

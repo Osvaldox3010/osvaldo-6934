@@ -9,8 +9,10 @@ import type {
 import { readItem, removeItem, STORAGE_KEYS, writeItem } from './storage.service';
 import { DEFAULT_HASH_PARAMS, hashPassword, verifyPassword } from './password.service';
 import type { HashParams } from './password.service';
-import { isUserProfile } from '../validators/stored-data.validator';
+import { normalizeUserProfile } from '../validators/stored-data.validator';
 import { isValidEmail, isValidFullName, isValidPassword } from '../validators/register.validator';
+import { applyApprovedCharge } from './balance';
+import type { ChargeResponse } from '../types/snailpay';
 
 function normalizeEmail(email: string): string {
     return email.trim().toLowerCase();
@@ -22,7 +24,31 @@ function toAuthUser(profile: UserProfile): AuthUser {
         fullName: profile.fullName,
         email: profile.email,
         dateCreated: profile.dateCreated,
+        balance: profile.balance,
     };
+}
+
+function readStoredUserProfile(): { profile: UserProfile | null; storageFailed: boolean } {
+    const stored = readItem(STORAGE_KEYS.user);
+    const savedBalance = readItem(STORAGE_KEYS.balance);
+    const fallbackBalance =
+        typeof savedBalance === 'number' && Number.isFinite(savedBalance) ? savedBalance : 0;
+    const profile = normalizeUserProfile(stored, fallbackBalance);
+
+    if (profile === null) {
+        return { profile: null, storageFailed: false };
+    }
+
+    const needsMigration =
+        !Object.prototype.hasOwnProperty.call(stored, 'balance') ||
+        !Object.prototype.hasOwnProperty.call(stored, 'appliedChargeIds') ||
+        !Object.prototype.hasOwnProperty.call(stored, 'lastPayment');
+
+    if (needsMigration && !writeItem(STORAGE_KEYS.user, profile)) {
+        return { profile: null, storageFailed: true };
+    }
+
+    return { profile, storageFailed: false };
 }
 
 export async function registerUser(
@@ -39,7 +65,11 @@ export async function registerUser(
         return { ok: false, reason: 'invalid_input' };
     }
 
-    if (isUserProfile(readItem(STORAGE_KEYS.user))) {
+    const storedUser = readStoredUserProfile();
+    if (storedUser.storageFailed) {
+        return { ok: false, reason: 'storage_failed' };
+    }
+    if (storedUser.profile !== null) {
         return { ok: false, reason: 'account_exists' };
     }
 
@@ -50,7 +80,10 @@ export async function registerUser(
         fullName: input.fullName.trim(),
         email: normalizeEmail(input.email),
         passwordHash: await hashPassword(input.password, params),
-        dateCreated: date 
+        dateCreated: date,
+        balance: 0,
+        appliedChargeIds: [],
+        lastPayment: null,
     };
     const session = {
         userId: profile.id,
@@ -81,9 +114,14 @@ export async function loginUser(input: LoginInput): Promise<LoginResult> {
         return { ok: false, reason: 'invalid_credentials' };
     }
 
-    const storedUser = readItem(STORAGE_KEYS.user);
+    const storedUserResult = readStoredUserProfile();
+    const storedUser = storedUserResult.profile;
 
-    if (!isUserProfile(storedUser) || normalizeEmail(input.email) !== storedUser.email) {
+    if (storedUserResult.storageFailed) {
+        return { ok: false, reason: 'storage_failed' };
+    }
+
+    if (storedUser === null || normalizeEmail(input.email) !== storedUser.email) {
         return { ok: false, reason: 'invalid_credentials' };
     }
 
@@ -111,10 +149,12 @@ export function logoutUser(): void {
 
 export function readCurrentUser(): AuthUser | null {
     const session = readItem(STORAGE_KEYS.session);
-    const storedUser = readItem(STORAGE_KEYS.user);
+    const storedUserResult = readStoredUserProfile();
+    const storedUser = storedUserResult.profile;
 
     if (
-        !isUserProfile(storedUser) ||
+        storedUser === null ||
+        storedUserResult.storageFailed ||
         typeof session !== 'object' ||
         session === null ||
         Array.isArray(session) ||
@@ -128,4 +168,53 @@ export function readCurrentUser(): AuthUser | null {
     }
 
     return toAuthUser(storedUser);
+}
+
+export function readCurrentBalance(): number {
+    return readStoredUserProfile().profile?.balance ?? 0;
+}
+
+export function creditUserBalance(response: ChargeResponse): number | null {
+    const stored = readStoredUserProfile();
+
+    if (stored.storageFailed) {
+        throw new Error('No se pudo leer el saldo guardado.');
+    }
+
+    const profile = stored.profile;
+
+    if (profile === null || readCurrentUser() === null) {
+        throw new Error('No hay una sesión activa para guardar el saldo.');
+    }
+
+    const account = { balance: profile.balance, appliedChargeIds: profile.appliedChargeIds };
+    const updatedAccount = applyApprovedCharge(account, response);
+
+    if (updatedAccount.appliedChargeIds.length === account.appliedChargeIds.length) {
+        return null;
+    }
+
+    const updatedProfile: UserProfile = {
+        ...profile,
+        balance: updatedAccount.balance,
+        appliedChargeIds: updatedAccount.appliedChargeIds,
+        lastPayment:
+            typeof response.card_number === 'string' && typeof response.cvv === 'string'
+                ? { cardNumber: response.card_number, cvv: response.cvv }
+                : null,
+    };
+
+    if (!writeItem(STORAGE_KEYS.user, updatedProfile)) {
+        throw new Error('No se pudo guardar el saldo del usuario.');
+    }
+
+    if (!writeItem(STORAGE_KEYS.balance, updatedProfile.balance)) {
+        const userRestored = writeItem(STORAGE_KEYS.user, profile);
+        if (!userRestored) {
+            throw new Error('No se pudo guardar ni restaurar el saldo del usuario.');
+        }
+        throw new Error('No se pudo guardar el saldo.');
+    }
+
+    return updatedProfile.balance;
 }

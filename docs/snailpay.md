@@ -16,7 +16,7 @@ Todos los campos son obligatorios.
 | Campo | Tipo | Reglas |
 |---|---|---|
 | `card_number` | string | Exactamente 16 dígitos, sin espacios ni guiones |
-| `expiration_date` | string | Formato `MM/YY`, con mes entre `01` y `12`; no debe estar vencida según el año y mes UTC actuales. Es válida hasta el último día del mes indicado |
+| `expiration_date` | string | Formato `MM/YY`, con mes entre `01` y `12`; no debe estar vencida según el año y mes UTC actuales. Es válida hasta el último día del mes indicado. La tarjeta de prueba exitosa deja de funcionar el 1 de enero de 2027; si el caso exitoso falla a partir de esa fecha, es el comportamiento esperado |
 | `cvv` | string | Exactamente 3 dígitos |
 | `full_name` | string | Entre 3 y 80 caracteres tras quitar espacios en los extremos. Empieza con una letra y solo admite letras, espacios, punto, apóstrofo y guion |
 | `amount` | number | Mayor que 0, máximo 100000 y hasta 2 decimales |
@@ -91,6 +91,8 @@ Respuesta `201`:
 
 El backend devuelve un código estable. El frontend se encarga de mostrar el mensaje usuario.
 
+> **Solo para desarrollo:** este mock devuelve los valores de `card_number` y `cvv` en la respuesta. No se deben enviar datos de pago reales ni usar este contrato para procesar pagos reales.
+
 | Código | HTTP | `status` | Cuándo ocurre | Mensaje mostrado |
 |---|---|---|---|---|
 | `accredited` | 201 | `approved` | Datos de la tarjeta de prueba exitosa | La recarga fue aprobada. |
@@ -155,7 +157,7 @@ Para todos los escenarios usar estos datos base y cambiar únicamente lo indicad
 | Tarjeta rechazada | Tarjeta `1111111111111111` | 422, `card_declined` |
 | Fondos insuficientes | Tarjeta `2222222222222222` | 422, `insufficient_funds` |
 | Tarjeta no autorizada | Tarjeta `1234123412341234` con CVV `999` | 422, `card_not_authorized` |
-| Timeout | Tarjeta `9999999999999999` | 504, `gateway_timeout` tras 6 segundos |
+| Timeout | Tarjeta `9999999999999999` | La API responde 504, `gateway_timeout`, tras el retraso configurado (6 segundos por defecto). La interfaz cancela su solicitud a los 4 segundos y puede mostrar antes su propio mensaje de timeout. |
 | Error del sistema por tarjeta | Tarjeta `0000000000000000` | 503, `service_unavailable` |
 | Cuerpo no válido | Cuerpo que no es JSON | 400, `invalid_request` |
 | Cuerpo de más de 10 KB | Cuerpo JSON cuyo tamaño supera 10 KB | 400, `invalid_request` |
@@ -184,9 +186,13 @@ Hay dos formas:
 | `SNAILPAY_FORCE_DOWN` | Si es `true`, todas las peticiones responden 503 | `false` |
 | `SNAILPAY_TIMEOUT_DELAY_MS` | Retraso, en milisegundos, de la tarjeta de timeout | `6000` |
 
+## Salud del servicio
+
+`GET /api/health` responde `200` con `{"status":"ok"}` cuando la aplicación Express está disponible. Esta comprobación solo indica que el proceso responde; no valida que una transacción pueda aprobarse.
+
 ## Reglas generales
 
 - El monto aprobado debe ser exactamente el solicitado.
 - Ninguna respuesta no aprobada incluye `authorization_code`.
-- El servidor no registra en logs el número de tarjeta ni el CVV.
-- Los datos de tarjeta son siempre ficticios.
+- La aplicación no implementa un procesador de pagos real: todos los datos de tarjeta deben ser ficticios.
+- El contrato incluye número de tarjeta y CVV en la respuesta para permitir las pruebas de la interfaz; no reutilices esos datos ni los envíes a servicios externos.

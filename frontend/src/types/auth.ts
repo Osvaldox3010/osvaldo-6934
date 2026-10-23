@@ -4,14 +4,25 @@ export type UserProfile = {
     email: string;
     passwordHash: string;
     dateCreated: string;
+    balance: number;
+    appliedChargeIds: string[];
+    lastPayment: LastPayment;
 };
+
+export type LastPayment = {
+    cardNumber: string;
+    cvv: string;
+} | null;
+
+export type LegacyUserProfile = Omit<UserProfile, 'balance' | 'appliedChargeIds' | 'lastPayment'> &
+    Partial<Pick<UserProfile, 'balance' | 'appliedChargeIds' | 'lastPayment'>>;
 
 export type Session = {
     userId: string;
-    dateOpened: string;
+    startedAt: string;
 };
 
-export type AuthUser = Omit<UserProfile, 'passwordHash'>;
+export type AuthUser = Pick<UserProfile, 'id' | 'fullName' | 'email' | 'dateCreated' | 'balance'>;
 
 export type RegisterInput = {
     fullName: string;
@@ -60,4 +71,3 @@ export type LoginFormErrors = {
     email?: string;
     password?: string;
 };
-

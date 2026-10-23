@@ -30,7 +30,7 @@ export function validateRegisterForm(values: RegisterFormValues): RegisterFormEr
     const errors: RegisterFormErrors = {};
 
     if(!isValidFullName(values.fullName)) {
-        errors.fullName = 'Escribe tu nombre completo. Entre 3 y 8 caracteres';
+        errors.fullName = 'Escribe tu nombre completo. Entre 3 y 80 caracteres';
     }
     
     if (!isValidEmail(values.email)) {
@@ -56,7 +56,7 @@ export function validateLoginForm(values: LoginInput): LoginFormErrors {
     }
 
     if(values.password.trim() === '' || values.password === null) {
-        errors.email = 'Escribe tu contraseña';
+        errors.password = 'Escribe tu contraseña';
     }
 
     return errors;

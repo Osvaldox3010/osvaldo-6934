@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
     "target": "ES2022",
     "lib": ["ES2022"],
     "module": "Node16",
@@ -15,7 +14,6 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "noEmit": true
   },
   "include": ["src", "tests"]
 }

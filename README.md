@@ -66,6 +66,15 @@ npm run dev:frontend
 
 La API de pagos es una pasarela simulada; consulta el [contrato de SnailPay](docs/snailpay.md) para ver sus solicitudes, respuestas y escenarios de prueba.
 
+## Documentación
+
+Esta documentación técnica describe una aplicación con los siguientes features: la autenticación y los datos de cuenta se guardan en el navegador, el dashboard usa datos simulados y SnailPay es un mock local. No hay base de datos ni procesador de pagos real.
+
+- [Arquitectura y diagramas](docs/arquitectura.md): componentes, límites y flujos principales.
+- [Backend](docs/backend.md): API Express, configuración, procesamiento de cobros y pruebas.
+- [Frontend](docs/frontend.md): rutas, autenticación local, dashboard, recargas y pruebas.
+- [Contrato de SnailPay](docs/snailpay.md): campos, códigos, tarjetas ficticias y escenarios.
+
 ## Scripts
 
 Todos se ejecutan desde la raíz.

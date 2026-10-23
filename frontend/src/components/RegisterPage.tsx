@@ -4,6 +4,7 @@ import { TextField } from './TextField';
 import { useAuth } from '../hooks/useAuth';
 import { validateRegisterForm } from '../validators/register.validator';
 import type { RegisterFormErrors, RegisterFormValues } from '../types/auth';
+import '../styles/RegisterPage.css';
 
 const initialValues: RegisterFormValues = {
     fullName: '',
@@ -72,47 +73,66 @@ export function RegisterPage() {
     }
 
     return (
-        <main>
-            <h1>Crea tu cuenta</h1>
-            <form onSubmit={handleSubmit} noValidate>
-                <TextField
-                    id="fullName"
-                    label="Nombre completo"
-                    value={values.fullName}
-                    error={errors.fullName}
-                    onChange={(value) => updateValue('fullName', value)}
-                />
-                <TextField
-                    id="email"
-                    label="Correo electrónico"
-                    type="email"
-                    value={values.email}
-                    error={errors.email}
-                    onChange={(value) => updateValue('email', value)}
-                />
-                <TextField
-                    id="password"
-                    label="Contraseña"
-                    type="password"
-                    value={values.password}
-                    error={errors.password}
-                    onChange={(value) => updateValue('password', value)}
-                />
-                <TextField
-                    id="confirmation"
-                    label="Confirmar contraseña"
-                    type="password"
-                    value={values.confirmation}
-                    error={errors.confirmation}
-                    onChange={(value) => updateValue('confirmation', value)}
-                />
-                {formError && <p role="alert">{formError}</p>}
-                {isRegistered && <p role="status">Tu cuenta se creó correctamente.</p>}
-                <button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? 'Creando cuenta…' : 'Crear cuenta'}
-                </button>
-                <Link to="/login">¿Ya tienes tu cuenta? Inicia sesión</Link>
-            </form>
+        <main className="auth-page auth-page--register">
+            <section className="auth-card" aria-labelledby="register-title">
+                <div className="auth-content">
+                    <header className="auth-header">
+                        <h1 id="register-title">Crea tu cuenta</h1>
+                        <p>¿Ya tienes una cuenta? <Link to="/login">Inicia sesión</Link></p>
+                    </header>
+                    <form className="auth-form" onSubmit={handleSubmit} noValidate>
+                        <TextField
+                            id="fullName"
+                            label="Nombre completo"
+                            placeholder="Nombre completo"
+                            autoComplete="name"
+                            value={values.fullName}
+                            error={errors.fullName}
+                            onChange={(value) => updateValue('fullName', value)}
+                        />
+                        <TextField
+                            id="email"
+                            label="Correo electrónico"
+                            placeholder="Correo electrónico"
+                            type="email"
+                            autoComplete="email"
+                            value={values.email}
+                            error={errors.email}
+                            onChange={(value) => updateValue('email', value)}
+                        />
+                        <TextField
+                            id="password"
+                            label="Contraseña"
+                            placeholder="Contraseña"
+                            type="password"
+                            showPasswordToggle
+                            autoComplete="new-password"
+                            value={values.password}
+                            error={errors.password}
+                            onChange={(value) => updateValue('password', value)}
+                        />
+                        <TextField
+                            id="confirmation"
+                            label="Confirmar contraseña"
+                            placeholder="Confirmar contraseña"
+                            type="password"
+                            showPasswordToggle
+                            autoComplete="new-password"
+                            value={values.confirmation}
+                            error={errors.confirmation}
+                            onChange={(value) => updateValue('confirmation', value)}
+                        />
+                        {formError && <p role="alert">{formError}</p>}
+                        {isRegistered && <p role="status">Tu cuenta se creó correctamente.</p>}
+                        <button className="auth-submit" type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? 'Creando cuenta…' : 'Crear cuenta'}
+                        </button>
+                    </form>
+                </div>
+                <figure className="auth-illustration">
+                    <img src="/images/snail.png" alt="Ilustración de un caracol morado" />
+                </figure>
+            </section>
         </main>
     );
 }

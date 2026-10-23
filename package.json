@@ -18,7 +18,9 @@
     "typecheck": "npm run typecheck --workspaces",
     "test": "npm run test --workspaces",
     "test:backend": "npm run test -w backend",
-    "test:frontend": "npm run test -w frontend"
+    "test:frontend": "npm run test -w frontend",
+    "start": "npm run start -w backend",
+    "start:backend": "npm run start -w backend"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

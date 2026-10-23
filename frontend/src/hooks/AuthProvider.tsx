@@ -6,9 +6,11 @@ import {
     logoutUser,
     readCurrentUser,
     registerUser,
+    creditUserBalance,
 } from '../services/auth.service';
 import { AuthContext } from './auth-context';
 import { DEFAULT_HASH_PARAMS, HashParams } from '../services/password.service';
+import type { ChargeResponse } from '../types/snailpay';
 
 type AuthProviderProps = {
     children: ReactNode;
@@ -43,9 +45,21 @@ export function AuthProvider({ children, hashParams = DEFAULT_HASH_PARAMS }: Aut
         setUser(null);
     }
 
+    function creditBalance(response: ChargeResponse): number | null {
+        const balance = creditUserBalance(response);
+
+        if (balance !== null) {
+            setUser((currentUser) => currentUser === null
+                ? currentUser
+                : { ...currentUser, balance });
+        }
+
+        return balance;
+    }
+
     return (
-        <AuthContext.Provider value = {{ user, register, login, logout }}>
+        <AuthContext.Provider value={{ user, balance: user?.balance ?? 0, register, login, logout, creditBalance }}>
             { children }
         </AuthContext.Provider>
     );
-};
+}

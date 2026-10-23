@@ -1,0 +1,88 @@
+.recharge-form {
+    display: grid;
+    gap: var(--space-4);
+}
+
+.recharge-form__notice {
+    margin: 0 0 var(--space-4);
+}
+
+.recharge-form .auth-field {
+    display: grid;
+    grid-template-columns: minmax(9rem, 0.7fr) minmax(0, 1.3fr);
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.recharge-form .auth-field label {
+    text-align: left;
+}
+
+.recharge-form .auth-field__input-wrapper {
+    min-width: 0;
+}
+
+.recharge-form .auth-field p {
+    grid-column: 2;
+    margin: 0;
+}
+
+.recharge-form > button {
+    grid-column: 1 / -1;
+}
+
+.recharge-field label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}
+
+.recharge-input {
+    width: 100%;
+    min-height: 1.75rem;
+    padding: 0.52rem 1.25rem;
+    margin: 0.2rem 0;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    outline: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+} 
+
+.recharge-form .auth-field p {
+    color: var(--color-danger);
+}
+
+.recharge-submit-container {
+    display: flex;
+    justify-content: center;
+}
+
+.recharge-submit {
+    min-height: 3rem;
+    width: fit-content;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--color-primary);
+    border-radius: 999px;
+    background: var(--color-primary);
+    color: var(--color-surface);
+    font: inherit;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: filter 160ms ease, transform 160ms ease;
+}
+
+.recharge-submit:hover:not(:disabled) {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+.recharge-submit:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}

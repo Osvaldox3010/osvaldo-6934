@@ -2,7 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { LoginPage } from "./components/LoginPage";
 import { RegisterPage } from "./components/RegisterPage";
 import { AuthProvider } from "./hooks/AuthProvider";
-import { DashboardPage } from "./components/DahsboardPage";
+import { DashboardPage } from "./pages/DahsboardPage";
 import { GuestRoute } from "./components/GuestRoute";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
