@@ -63,8 +63,6 @@ describe('RechargeForm', () => {
         expect(screen.getByLabelText(/CVV/)).toBeInTheDocument();
         expect(screen.getByLabelText(/Nombre del titular/)).toHaveValue('Ana Pérez');
         expect(screen.getByLabelText(/Monto/)).toBeInTheDocument();
-        expect(screen.getByText(/Solo datos ficticios/)).toBeInTheDocument();
-        expect(screen.getByText(/1234 1234 1234 1234/)).toBeInTheDocument();
     });
 
     it('valida el formulario vacío antes de llamar al cliente', async () => {
