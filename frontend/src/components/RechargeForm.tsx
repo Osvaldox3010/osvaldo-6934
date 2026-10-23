@@ -57,9 +57,6 @@ export function RechargeForm({ user, creditBalance }: RechargeFormProps) {
 
     return (
         <div className="recharge-form-container">
-            <p className="recharge-form__notice">
-                Solo datos ficticios. Tarjeta de prueba aprobada: 1234 1234 1234 1234.
-            </p>
             <form className="recharge-form" onSubmit={handleSubmit} noValidate>
                 <TextField
                     id="recharge-card-number"
